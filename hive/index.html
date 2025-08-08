@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hive — Save LA</title>
+  <meta name="theme-color" content="#0b0b12" />
+  <style>
+    /* ——— Base ——— */
+    html, body { height:100%; margin:0; background:#0b0b12; color:#EAE8F6;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+    }
+    a { color:#FFE0A8; text-decoration:none }
+    .wrap { min-height:100%; display:grid; place-items:center; padding:3rem 1.25rem }
+    .panel {
+      width:min(1100px,92vw); aspect-ratio:1/1; border-radius:24px; padding:clamp(16px,2.5vmax,36px);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05);
+      display:grid; grid-template-rows:auto auto 1fr auto; gap:14px;
+    }
+    h1 { margin:0; font-size:clamp(20px,2.2vmax,32px) }
+    .subtitle { opacity:.8 }
+    .toprow { display:flex; gap:10px; align-items:center; flex-wrap:wrap }
+    .pill {
+      padding:8px 12px; border-radius:999px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.12);
+      font-weight:600
+    }
+
+    /* ——— Square hive wheel ——— */
+    .wheel { position:relative; width:100%; height:100%; display:grid; place-items:center; overflow:hidden }
+    svg { width:100%; height:100% }
+
+    .node {
+      position:absolute; transform:translate(-50%, -50%);
+      padding:8px 10px; border-radius:12px; font-size:13px; white-space:nowrap;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.16);
+      cursor:pointer; user-select:none;
+      transition:transform .15s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .node:hover { transform:translate(-50%,-50%) scale(1.03); border-color:rgba(255,220,160,.7);
+      box-shadow:0 10px 28px rgba(0,0,0,.35) }
+    .node.active { outline: 0 0 0 9999px rgba(255,255,255,0); border-color:#FFE0A8 }
+
+    .cta { display:flex; gap:10px; flex-wrap:wrap }
+    .btn { display:inline-flex; align-items:center; justify-content:center; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); color:#f1efe6; font-weight:700 }
+
+    /* ——— Modal ——— */
+    .modalMask {
+      position:fixed; inset:0; display:none; place-items:center;
+      background:rgba(5,5,10,.58); backdrop-filter: blur(6px);
+    }
+    .modalMask.show { display:grid }
+    .modal {
+      width:min(720px, 92vw); border-radius:20px; padding:20px;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.16); box-shadow:0 40px 90px rgba(0,0,0,.6);
+      display:grid; gap:12px;
+    }
+    .modal h2 { margin:.2rem 0 }
+    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap }
+    input[type="text"] {
+      background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.18);
+      color:#EAE8F6; border-radius:10px; padding:8px 10px;
+    }
+
+    /* ——— Decorative ——— */
+    .castle { opacity:.9 }
+    .ring { animation:spin 60s linear infinite; transform-origin:400px 400px }
+    @keyframes spin { to { transform:rotate(360deg) } }
+
+    @media (max-width: 720px) {
+      .panel { aspect-ratio:auto }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="panel" aria-label="Hive view">
+      <header class="toprow">
+        <h1>Hive — Save LA</h1>
+        <div class="pill" id="profilePill">Hero: <span id="heroClass">Unchosen</span> • Daēmon: <span id="heroDaemon">—</span></div>
+      </header>
+      <div class="subtitle">Stronger together. Together we roll. The sovereign wheel turns with joy.</div>
+
+      <div class="wheel" id="wheel" aria-label="Hive Specializations Wheel">
+        <!-- Square frame + castle + ring + spokes drawn in SVG; nodes positioned by JS -->
+        <svg viewBox="0 0 800 800" aria-hidden="true">
+          <rect x="20" y="20" width="760" height="760" rx="24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="2"/>
+          <!-- Castle icon (hive) -->
+          <path class="castle" d="M100 160 v-40 h40 v40 h40 v-40 h40 v40 h20 v120 h-180 v-120z m30 120 v-40 h30 v40h-30zm60 0 v-40 h30 v40h-30z" fill="rgba(255,233,180,.9)"/>
+          <!-- Outer ring + gentle rotation -->
+          <g class="ring">
+            <circle cx="400" cy="400" r="260" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="4"/>
+            <!-- 12 spokes -->
+            <g stroke="rgba(255,255,255,.18)" stroke-width="3">
+              <line x1="400" y1="400" x2="400" y2="140"/>
+              <line x1="400" y1="400" x2="560" y2="200"/>
+              <line x1="400" y1="400" x2="660" y2="400"/>
+              <line x1="400" y1="400" x2="560" y2="600"/>
+              <line x1="400" y1="400" x2="400" y2="660"/>
+              <line x1="400" y1="400" x2="240" y2="600"/>
+              <line x1="400" y1="400" x2="140" y2="400"/>
+              <line x1="400" y1="400" x2="240" y2="200"/>
+              <line x1="400" y1="400" x2="520" y2="160"/>
+              <line x1="400" y1="400" x2="640" y2="280"/>
+              <line x1="400" y1="400" x2="520" y2="640"/>
+              <line x1="400" y1="400" x2="280" y2="160"/>
+            </g>
+          </g>
+
+          <!-- Center hub: children on a swing (abstract placeholder) -->
+          <circle cx="400" cy="400" r="56" fill="rgba(255,233,180,.92)"/>
+          <path d="M380 380 q20 -18 40 0" stroke="#7E73FF" stroke-width="6" fill="none"/>
+          <path d="M390 392 q10 20 0 38" stroke="#7E73FF" stroke-width="6" fill="none"/>
+          <path d="M410 392 q-10 20 0 38" stroke="#7E73FF" stroke-width="6" fill="none"/>
+          <line x1="386" y1="432" x2="386" y2="452" stroke="#7E73FF" stroke-width="6"/>
+          <line x1="414" y1="432" x2="414" y2="452" stroke="#7E73FF" stroke-width="6"/>
+          <line x1="386" y1="452" x2="414" y2="452" stroke="#7E73FF" stroke-width="6"/>
+        </svg>
+        <!-- Nodes injected here -->
+      </div>
+
+      <footer>
+        <div class="cta">
+          <a class="btn" href="/city/">Go to City Map</a>
+          <a class="btn" href="/codex/">Open the Codex</a>
+          <a class="btn" href="/">Return to Gate</a>
+          <button class="btn" id="editProfileBtn" type="button">Edit Hero & Daēmon</button>
+        </div>
+      </footer>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div class="modalMask" id="modalMask" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <h2 id="modalTitle">Class</h2>
+      <div id="modalBody">Details…</div>
+      <div class="row">
+        <button class="btn" id="chooseBtn" type="button">Choose this Class</button>
+        <button class="btn" id="closeBtn" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Onboarding Modal -->
+  <div class="modalMask" id="onboardMask" role="dialog" aria-modal="true" aria-labelledby="onboardTitle">
+    <div class="modal">
+      <h2 id="onboardTitle">Welcome to the Hive</h2>
+      <p>“We need your help. The king has returned; his eagle stands ready, but the fires burned his wings.”<br/>
+      Activate your <strong>hero</strong>, choose your <strong>class</strong>, and bond with your <strong>daēmon</strong>.</p>
+
+      <div class="row">
+        <label>Hero name
+          <input id="heroName" type="text" placeholder="Your name (optional)" />
+        </label>
+      </div>
+
+      <div class="row">
+        <label>Daēmon name
+          <input id="daemonName" type="text" placeholder="Name your companion" />
+        </label>
+        <label>Daēmon form
+          <input id="daemonForm" type="text" placeholder="e.g., Eagle, Wolf, Fox, Dolphin…" />
+        </label>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="onboardDone" type="button">Save & Begin</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // —— Data: spokes/classes ——
+    const SPOKES = [
+      { id:"sovereignty", label:"Sovereignty", blurb:"Throne of truth. Strategy, ethics, and governance." },
+      { id:"tech",        label:"Tech",        blurb:"Builders of tools, code, and infrastructure." },
+      { id:"finance",     label:"Finance",     blurb:"Stewards of capital, incentives, sustainability." },
+      { id:"energy",      label:"Energy",      blurb:"Power systems, renewables, abundance." },
+      { id:"dance",       label:"Dance & Martial Arts", blurb:"Embodied arts of flow, strength, and discipline." },
+      { id:"education",   label:"Education",   blurb:"Learning arcs, pedagogy, joyful rigor." },
+      { id:"psychology",  label:"Psychology",  blurb:"Care, cognition, healing, and growth." },
+      { id:"visual",      label:"Visual Arts", blurb:"Image, symbol, design, and architecture." },
+      { id:"music",       label:"Music",       blurb:"Sound, rhythm, composition, ceremony." },
+      { id:"community",   label:"Community",   blurb:"Civic craft, coordination, mutual aid." },
+      { id:"selfcare",    label:"Self-care",   blurb:"Restoration, nutrition, sleep, sunlight." },
+      { id:"governance",  label:"Governance",  blurb:"Institutions, law, dispute resolution." },
+    ];
+
+    // —— Profile persistence ——
+    const STORAGE_KEY = "hive_profile_v1";
+    const $ = s => document.querySelector(s);
+    const heroClassEl = $("#heroClass");
+    const heroDaemonEl = $("#heroDaemon");
+    const profilePill = $("#profilePill");
+    let profile = loadProfile();
+
+    function loadProfile(){
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {} } catch { return {} }
+    }
+    function saveProfile(next){ profile = {...profile, ...next}; localStorage.setItem(STORAGE_KEY, JSON.stringify(profile)); renderProfile() }
+    function renderProfile(){
+      heroClassEl.textContent = profile.classLabel || "Unchosen";
+      heroDaemonEl.textContent = profile.daemonName ? `${profile.daemonName} (${profile.daemonForm||"?"})` : "—";
+    }
+    renderProfile();
+
+    // —— Build nodes around the ring ——
+    const wheel = $("#wheel");
+    const R = 260;                    // radius for node placement
+    const center = { x: 400, y: 400 };// SVG center in viewBox coords
+    function polarToClient(angleDeg, r){
+      const a = (angleDeg - 90) * Math.PI/180; // shift so 0deg is top
+      const x = center.x + r * Math.cos(a);
+      const y = center.y + r * Math.sin(a);
+      // Convert SVG coords (viewBox 0..800) to the wheel div client coords
+      const rect = wheel.getBoundingClientRect();
+      return {
+        left: (x/800) * rect.width,
+        top:  (y/800) * rect.height
+      };
+    }
+
+    // Distribute evenly
+    const baseAngle = 360 / SPOKES.length;
+    SPOKES.forEach((s, i) => {
+      const angle = i * baseAngle;
+      const pos = polarToClient(angle, R + 18); // slightly outside ring
+      const node = document.createElement("button");
+      node.className = "node";
+      node.style.left = pos.left + "px";
+      node.style.top  = pos.top  + "px";
+      node.textContent = s.label;
+      node.setAttribute("data-id", s.id);
+      node.setAttribute("data-label", s.label);
+      node.setAttribute("data-blurb", s.blurb);
+      node.addEventListener("click", () => openModal(s));
+      wheel.appendChild(node);
+
+      if (profile.classId === s.id) node.classList.add("active");
+    });
+
+    // —— Modal logic ——
+    const modalMask = $("#modalMask");
+    const modalTitle = $("#modalTitle");
+    const modalBody  = $("#modalBody");
+    const chooseBtn  = $("#chooseBtn");
+    const closeBtn   = $("#closeBtn");
+    let currentClass = null;
+
+    function openModal(spoke){
+      currentClass = spoke;
+      modalTitle.textContent = spoke.label;
+      modalBody.innerHTML = `<p>${spoke.blurb}</p>
+      <p><em>Mythic mission:</em> As this spoke turns, your craft strengthens the whole wheel.
+      You’ll receive periodic check-ins from the Eagle and rewards as your deeds accumulate.</p>`;
+      modalMask.classList.add("show");
+      chooseBtn.focus();
+    }
+    function closeModal(){ modalMask.classList.remove("show") }
+    closeBtn.addEventListener("click", closeModal);
+    modalMask.addEventListener("click", e => { if (e.target === modalMask) closeModal() });
+
+    chooseBtn.addEventListener("click", () => {
+      if (!currentClass) return;
+      // mark active node
+      document.querySelectorAll(".node").forEach(n => n.classList.remove("active"));
+      const activeNode = document.querySelector(`.node[data-id="${currentClass.id}"]`);
+      if (activeNode) activeNode.classList.add("active");
+      saveProfile({ classId: currentClass.id, classLabel: currentClass.label });
+      closeModal();
+    });
+
+    // —— Onboarding (hero + daēmon) ——
+    const onboardMask = $("#onboardMask");
+    const heroNameIn  = $("#heroName");
+    const daemonNameIn= $("#daemonName");
+    const daemonFormIn= $("#daemonForm");
+    const onboardDone = $("#onboardDone");
+
+    if (!profile.daemonName || !profile.classId){
+      // Prompt on first visit (or until both are set)
+      onboardMask.classList.add("show");
+      setTimeout(() => heroNameIn.focus(), 0);
+    }
+
+    onboardDone.addEventListener("click", () => {
+      saveProfile({
+        heroName: heroNameIn.value || profile.heroName || "Traveler",
+        daemonName: daemonNameIn.value || profile.daemonName || "Companion",
+        daemonForm: daemonFormIn.value || profile.daemonForm || "Eagle"
+      });
+      onboardMask.classList.remove("show");
+    });
+
+    // Manual edit button
+    $("#editProfileBtn").addEventListener("click", () => {
+      heroNameIn.value   = profile.heroName || "";
+      daemonNameIn.value = profile.daemonName || "";
+      daemonFormIn.value = profile.daemonForm || "";
+      onboardMask.classList.add("show");
+      setTimeout(() => heroNameIn.focus(), 0);
+    });
+  </script>
+</body>
+</html>
