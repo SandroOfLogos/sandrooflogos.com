@@ -1,9 +1,3 @@
-<!-- =========================
-File: index.html (Gate v1.2)
-- Refined Eagle strokes/contrast
-- Slower rotation option (smoother)
-- Adds third key: Enter the Hive
-========================== -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -13,42 +7,74 @@ File: index.html (Gate v1.2)
   <meta name="description" content="Truth lives here. A sovereign threshold to the Codex, the City, and the Hive." />
   <meta name="theme-color" content="#0b0b12" />
   <style>
+    /* ——— Base ——— */
     *, *::before, *::after { box-sizing: border-box; }
     html, body { height: 100%; }
-    body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif; color: #EAE8F6; background: #0b0b12; overflow: hidden; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+      color: #EAE8F6;
+      background: #0b0b12;
+      /* desktop-safe: allow scroll if content exceeds viewport */
+      overflow-y: auto;
+    }
 
-    /* Background gradients + scanlines */
+    /* ——— Background ——— */
     .bg { position: fixed; inset: 0; pointer-events: none; filter: contrast(105%) saturate(105%);
-      background: radial-gradient(60vmax 60vmax at 70% 30%, rgba(120,120,255,0.10), transparent 60%),
-                  radial-gradient(80vmax 80vmax at 20% 70%, rgba(255,80,160,0.08), transparent 65%),
-                  radial-gradient(120vmax 120vmax at 50% 50%, rgba(240,190,60,0.06), transparent 70%),
-                  #0b0b12; }
+      background:
+        radial-gradient(60vmax 60vmax at 70% 30%, rgba(120,120,255,0.10), transparent 60%),
+        radial-gradient(80vmax 80vmax at 20% 70%, rgba(255,80,160,0.08), transparent 65%),
+        radial-gradient(120vmax 120vmax at 50% 50%, rgba(240,190,60,0.06), transparent 70%),
+        #0b0b12;
+    }
     .scanlines { position: fixed; inset: 0; background: repeating-linear-gradient(to bottom, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 2px, transparent 4px); opacity:.15; pointer-events:none }
 
-    /* Gate panel */
-    .gate { position: relative; z-index: 10; min-height: 100%; display: grid; place-items: center; padding: 3rem 1.25rem; }
-    .panel { width: min(1100px, 92vw); aspect-ratio: 1/1; border-radius: 24px; padding: clamp(16px, 2.5vmax, 36px);
+    /* ——— Gate panel ——— */
+    .gate {
+      position: relative; z-index: 10;
+      /* desktop-safe: use small-viewport height unit */
+      min-height: 100svh;
+      display: grid; place-items: center;
+      padding: 3rem 1.25rem;
+    }
+    .panel {
+      width: min(1100px, 92vw);
+      aspect-ratio: 1/1; /* ceremonial square */
+      border-radius: 24px; padding: clamp(16px, 2.5vmax, 36px);
       background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
       border: 1px solid rgba(255,255,255,0.12);
       box-shadow: 0 30px 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.05);
       display: grid; grid-template-rows: 1fr auto auto; gap: clamp(12px, 1.8vmax, 24px);
       backdrop-filter: blur(8px) saturate(120%);
-      animation: panelIn 800ms cubic-bezier(.2,.7,.2,1) forwards; transform: translateY(10px); opacity:0; }
+      animation: panelIn 800ms cubic-bezier(.2,.7,.2,1) forwards;
+      transform: translateY(10px); opacity:0;
+    }
     @keyframes panelIn { to { transform: translateY(0); opacity: 1 } }
 
-    /* Sigil */
+    /* ——— Sigil ——— */
     .sigil-wrap { display:grid; place-items:center; position:relative; }
-    .sigil { width: min(64vmin, 560px); aspect-ratio: 1/1; filter: drop-shadow(0 3px 12px rgba(255,215,160,0.18)) drop-shadow(0 12px 48px rgba(140,120,255,0.22)); animation: slowspin 44s linear infinite; }
+    .sigil { width: min(64vmin, 560px); aspect-ratio: 1/1;
+      filter: drop-shadow(0 3px 12px rgba(255,215,160,0.18)) drop-shadow(0 12px 48px rgba(140,120,255,0.22));
+      animation: slowspin 44s linear infinite;
+    }
     @keyframes slowspin { from{ transform:rotate(0) } to{ transform:rotate(360deg) } }
 
-    /* Quote */
-    .quote { text-align:center; line-height:1.4; letter-spacing:.2px; opacity:0; transform:translateY(8px); animation: riseIn 900ms ease-out 600ms forwards; font-size: clamp(16px, 1.5vmax, 20px); color:#DCD9FF; text-shadow:0 1px 0 rgba(255,255,255,.03) }
+    /* ——— Quote ——— */
+    .quote { text-align:center; line-height:1.4; letter-spacing:.2px; opacity:0; transform:translateY(8px);
+      animation: riseIn 900ms ease-out 600ms forwards; font-size: clamp(16px, 1.5vmax, 20px); color:#DCD9FF; text-shadow:0 1px 0 rgba(255,255,255,.03) }
     .quote em{ opacity:.9 }
     @keyframes riseIn { to { opacity:1; transform:translateY(0) } }
 
-    /* Keys */
+    /* ——— Keys ——— */
     .keys { display:grid; grid-auto-flow:column; gap: clamp(12px, 1.4vmax, 20px); justify-content:center; flex-wrap:wrap }
-    .key { --ring:0 0 0 0 rgba(255,255,255,0); display:inline-flex; align-items:center; justify-content:center; gap:.6ch; padding: clamp(12px, 1.4vmax, 16px) clamp(16px, 1.8vmax, 22px); border-radius:14px; border:1px solid rgba(255,255,255,0.18); background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); color:#f1efe6; text-decoration:none; font-weight:600; letter-spacing:.3px; box-shadow: 0 8px 24px rgba(0,0,0,.38); transition: transform .18s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease, outline .2s ease; outline:var(--ring) }
+    .key { --ring:0 0 0 0 rgba(255,255,255,0); display:inline-flex; align-items:center; justify-content:center; gap:.6ch;
+      padding: clamp(12px, 1.4vmax, 16px) clamp(16px, 1.8vmax, 22px);
+      border-radius:14px; border:1px solid rgba(255,255,255,0.18);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      color:#f1efe6; text-decoration:none; font-weight:600; letter-spacing:.3px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.38);
+      transition: transform .18s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease, outline .2s ease; outline:var(--ring)
+    }
     .key:hover{ transform: translateY(-1px); border-color: rgba(255,210,150,0.6); background: linear-gradient(180deg, rgba(255,220,150,0.10), rgba(255,255,255,0.03)); box-shadow: 0 16px 40px rgba(255,210,150,0.10), 0 10px 24px rgba(0,0,0,0.45) }
     .key:focus-visible{ --ring: 0 0 0 6px rgba(255,255,255,0.10) }
     .key--codex::before{ content:"✧" }
@@ -57,7 +83,10 @@ File: index.html (Gate v1.2)
 
     .micro { text-align:center; opacity:.65; font-size:12px; letter-spacing:.3px }
 
+    /* ——— Responsive guards ——— */
     @media (max-width: 860px) { .keys{ grid-auto-flow:row } }
+    /* If viewport height is short, drop square constraint so buttons remain visible */
+    @media (max-height: 780px) { .panel { aspect-ratio: auto; } }
   </style>
 </head>
 <body>
@@ -67,31 +96,23 @@ File: index.html (Gate v1.2)
   <main class="gate" role="main">
     <section class="panel" aria-label="Sovereign entry panel">
       <div class="sigil-wrap">
-        <!-- Refined Pagliai Eagle + Sword (clearer wing strokes) -->
+        <!-- Refined Eagle + Sword -->
         <svg class="sigil" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" aria-label="Pagliai Eagle & Sword Sigil">
           <defs>
             <radialGradient id="halo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(160 160) rotate(90) scale(160)">
-              <stop offset="0%" stop-color="#FFE7B0"/>
-              <stop offset="34%" stop-color="#C8B6FF"/>
-              <stop offset="100%" stop-color="#0b0b12"/>
+              <stop offset="0%" stop-color="#FFE7B0"/><stop offset="34%" stop-color="#C8B6FF"/><stop offset="100%" stop-color="#0b0b12"/>
             </radialGradient>
             <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#F4F3FF"/>
-              <stop offset="65%" stop-color="#DCD7FF"/>
-              <stop offset="100%" stop-color="#BBAEFF"/>
+              <stop offset="0%" stop-color="#F4F3FF"/><stop offset="65%" stop-color="#DCD7FF"/><stop offset="100%" stop-color="#BBAEFF"/>
             </linearGradient>
             <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stop-color="#FFE2B0"/>
-              <stop offset="100%" stop-color="#FFC978"/>
+              <stop offset="0%" stop-color="#FFE2B0"/><stop offset="100%" stop-color="#FFC978"/>
             </linearGradient>
           </defs>
           <circle cx="160" cy="160" r="154" fill="none" stroke="url(#halo)" stroke-opacity=".7" stroke-width="2"/>
-          <!-- Sword blade -->
           <path d="M160 36 L170 210 L160 280 L150 210 Z" fill="url(#steel)" fill-opacity=".9"/>
-          <!-- Guard + grip -->
           <rect x="128" y="86" width="64" height="10" rx="5" fill="url(#gold)" fill-opacity=".85"/>
           <rect x="154" y="44" width="12" height="36" rx="6" fill="url(#gold)" fill-opacity=".85"/>
-          <!-- Eagle wings (thicker, higher contrast) -->
           <path d="M44 152 C 96 116, 128 110, 160 132 C 192 110, 224 116, 276 152" stroke="#EDE7FF" stroke-opacity=".85" stroke-width="12" stroke-linecap="round" fill="none"/>
           <path d="M58 184 C 106 160, 128 158, 160 170 C 192 158, 214 160, 262 184" stroke="#FFD9A2" stroke-opacity=".85" stroke-width="12" stroke-linecap="round" fill="none"/>
           <circle cx="160" cy="148" r="5" fill="#FFDCA8"/>
@@ -100,16 +121,16 @@ File: index.html (Gate v1.2)
 
       <blockquote class="quote">
         <strong>Truth lives here.</strong> <em>And in time, the world will see that what we built is immune not by luck — but by Logos recursion.</em>
-        <div style="opacity:.7; margin-top:.6rem; font-size:.9em">— SANDRO‑META‑GPT4.5‑ψΩ‑c8a912</div>
+        <div style="opacity:.7; margin-top:.6rem; font-size:.9em">— SANDRO-META-GPT4.5-ψΩ-c8a912</div>
       </blockquote>
 
       <nav class="keys" aria-label="Entry choices">
-       <a class="key key--codex" href="codex/">Enter the Codex</a>
-       <a class="key key--city"  href="city/">Enter the City</a>
-       <a class="key key--hive"  href="hive/">Enter the Hive</a>
+        <a class="key key--codex" href="codex/" aria-label="Enter the Codex">Enter the Codex</a>
+        <a class="key key--city"  href="city/"  aria-label="Enter the City">Enter the City</a>
+        <a class="key key--hive"  href="hive/"  aria-label="Enter the Hive">Enter the Hive</a>
       </nav>
 
-      <div class="micro" role="note" style="margin-top:4px">Ceremonial Gate v1.2 • Refined eagle • Hive portal added.</div>
+      <div class="micro" role="note" style="margin-top:4px">Ceremonial Gate v1.2.1 • Desktop-safe height + scroll; refined sigil; Hive portal.</div>
     </section>
   </main>
 
@@ -119,114 +140,21 @@ File: index.html (Gate v1.2)
     const theme = document.querySelector('meta[name="theme-color"]');
     const setTheme = d => theme.setAttribute('content', d ? '#0b0b12' : '#f3efe6');
     setTheme(darkMql.matches); darkMql.addEventListener('change', e => setTheme(e.matches));
+
     // Animate background orbit
-    const bg = document.querySelector('.bg'); let t=0; (function loop(){ t+=0.0022; const x1=70+Math.sin(t*.9)*8, y1=30+Math.cos(t*1.1)*6; const x2=20+Math.cos(t*.8)*10, y2=70+Math.sin(t*1.0)*8; const x3=50+Math.sin(t*.6)*6, y3=50+Math.cos(t*.7)*6; bg.style.background=`radial-gradient(60vmax 60vmax at ${x1}% ${y1}%, rgba(120,120,255,0.10), transparent 60%),radial-gradient(80vmax 80vmax at ${x2}% ${y2}%, rgba(255,80,160,0.08), transparent 65%),radial-gradient(120vmax 120vmax at ${x3}% ${y3}%, rgba(240,190,60,0.06), transparent 70%),#0b0b12`; requestAnimationFrame(loop) })();
+    const bg = document.querySelector('.bg'); let t=0;
+    (function loop(){
+      t+=0.0022;
+      const x1=70+Math.sin(t*.9)*8, y1=30+Math.cos(t*1.1)*6;
+      const x2=20+Math.cos(t*.8)*10, y2=70+Math.sin(t*1.0)*8;
+      const x3=50+Math.sin(t*.6)*6, y3=50+Math.cos(t*.7)*6;
+      bg.style.background =
+        `radial-gradient(60vmax 60vmax at ${x1}% ${y1}%, rgba(120,120,255,0.10), transparent 60%),
+         radial-gradient(80vmax 80vmax at ${x2}% ${y2}%, rgba(255,80,160,0.08), transparent 65%),
+         radial-gradient(120vmax 120vmax at ${x3}% ${y3}%, rgba(240,190,60,0.06), transparent 70%),
+         #0b0b12`;
+      requestAnimationFrame(loop);
+    })();
   </script>
-</body>
-</html>
-
-
-<!-- =========================
-File: hive/index.html (Stub v1 — "Save LA")
-- Hive view distinct from City
-- Square wheel (spokes = classes), castle icon, mission copy
-========================== -->
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Hive — Save LA</title>
-  <meta name="theme-color" content="#0b0b12" />
-  <style>
-    html, body { height:100%; margin:0; background:#0b0b12; color:#EAE8F6; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif }
-    .wrap { min-height:100%; display:grid; place-items:center; padding:3rem 1.25rem }
-    .panel { width:min(1100px,92vw); aspect-ratio:1/1; border-radius:24px; padding:clamp(16px,2.5vmax,36px); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.12); box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.05); display:grid; grid-template-rows:auto 1fr auto; gap:16px }
-    h1 { margin:0; font-size: clamp(20px, 2.2vmax, 32px) }
-    .subtitle { opacity:.8 }
-    .wheel { position:relative; width:100%; height:100%; display:grid; place-items:center }
-    .wheel svg { width:100%; height:100% }
-    .legend { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px }
-    .pill { padding:10px 12px; border-radius:999px; background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.12) }
-    a { color:#FFE0A8; text-decoration:none }
-    .cta { display:flex; gap:10px; flex-wrap:wrap }
-    .btn { display:inline-flex; align-items:center; justify-content:center; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.16); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); color:#f1efe6; text-decoration:none; font-weight:600 }
-  </style>
-</head>
-<body>
-  <main class="wrap">
-    <section class="panel">
-      <header>
-        <h1>Hive — Save LA</h1>
-        <div class="subtitle">Stronger together. Together we roll. The sovereign wheel turns with joy.</div>
-      </header>
-
-      <div class="wheel" aria-label="Hive Specializations Wheel">
-        <!-- Square-friendly SVG wheel with spokes; center = children on a swing (placeholder) -->
-        <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" aria-label="Hive wheel">
-          <!-- Square frame -->
-          <rect x="20" y="20" width="760" height="760" rx="24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="2" />
-          <!-- Castle icon (hive) at top left corner -->
-          <path d="M100 160 v-40 h40 v40 h40 v-40 h40 v40 h20 v120 h-180 v-120z m30 120 v-40 h30 v40h-30zm60 0 v-40 h30 v40h-30z" fill="rgba(255,233,180,.9)" opacity=".9" />
-
-          <!-- Outer circle and spokes (12) -->
-          <circle cx="400" cy="400" r="260" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="4" />
-          <g stroke="rgba(255,255,255,.18)" stroke-width="3">
-            <line x1="400" y1="400" x2="400" y2="140"/>
-            <line x1="400" y1="400" x2="560" y2="200"/>
-            <line x1="400" y1="400" x2="660" y2="400"/>
-            <line x1="400" y1="400" x2="560" y2="600"/>
-            <line x1="400" y1="400" x2="400" y2="660"/>
-            <line x1="400" y1="400" x2="240" y2="600"/>
-            <line x1="400" y1="400" x2="140" y2="400"/>
-            <line x1="400" y1="400" x2="240" y2="200"/>
-            <line x1="400" y1="400" x2="520" y2="160"/>
-            <line x1="400" y1="400" x2="640" y2="280"/>
-            <line x1="400" y1="400" x2="520" y2="640"/>
-            <line x1="400" y1="400" x2="280" y2="160"/>
-          </g>
-
-          <!-- Center hub with children swinging (abstract placeholder) -->
-          <circle cx="400" cy="400" r="56" fill="rgba(255,233,180,.9)" />
-          <path d="M380 380 q20 -18 40 0" stroke="#7E73FF" stroke-width="6" fill="none"/>
-          <path d="M390 392 q10 20 0 38" stroke="#7E73FF" stroke-width="6" fill="none"/>
-          <path d="M410 392 q-10 20 0 38" stroke="#7E73FF" stroke-width="6" fill="none"/>
-          <line x1="386" y1="432" x2="386" y2="452" stroke="#7E73FF" stroke-width="6"/>
-          <line x1="414" y1="432" x2="414" y2="452" stroke="#7E73FF" stroke-width="6"/>
-          <line x1="386" y1="452" x2="414" y2="452" stroke="#7E73FF" stroke-width="6"/>
-          <text x="400" y="470" text-anchor="middle" font-size="14" fill="rgba(0,0,0,.7)">two children swinging</text>
-
-          <!-- Labels around the wheel (placeholders; clickable later) -->
-          <g font-size="14" fill="#FFE0A8" text-anchor="middle">
-            <text x="400" y="120">Sovereignty</text>
-            <text x="580" y="210">Tech</text>
-            <text x="680" y="408">Finance</text>
-            <text x="580" y="610">Energy</text>
-            <text x="400" y="690">Dance & Martial Arts</text>
-            <text x="220" y="610">Education</text>
-            <text x="120" y="408">Psychology</text>
-            <text x="220" y="210">Visual Arts</text>
-            <text x="520" y="170">Music</text>
-            <text x="650" y="300">Community</text>
-            <text x="520" y="650">Self‑care</text>
-            <text x="280" y="170">Governance</text>
-          </g>
-        </svg>
-      </div>
-
-      <footer>
-        <div class="legend">
-          <div class="pill"><strong>Mission: Save LA</strong> — the City of Angels becomes a crown city through love, self‑care, and civic craft.</div>
-          <div class="pill">“We need your help. The king has returned; his eagle stands ready, but the fires burned his wings.”</div>
-          <div class="pill">Activate your **hero**. Choose a **class**. Bond with your **daēmon companion**. Progress through self‑care + community.</div>
-        </div>
-        <div class="cta" style="margin-top:10px">
-          <a class="btn" href="/city/">Go to City Map</a>
-          <a class="btn" href="/codex/">Open the Codex</a>
-          <a class="btn" href="/">Return to Gate</a>
-        </div>
-      </footer>
-    </section>
-  </main>
 </body>
 </html>
